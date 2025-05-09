@@ -1,30 +1,43 @@
 // LoginScreen.tsx
-import { account } from '@/helpers/appwrite';
-import { storeSave } from '@/helpers/storage';
+import { AuthContext } from '@/helpers/authContext';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
+import { useContext } from "react";
 import { Image, Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Button, Divider, Text, TextInput, useTheme } from 'react-native-paper';
+
 export default function LoginScreen() {
-    const router = useRouter();
+  const router = useRouter();
     
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = React.useState('cesar.laraperalta@gmail.com');
+  const [password, setPassword] = React.useState('Jayce123');
   const { width } = useWindowDimensions();
   const theme = useTheme();
+  const authContext = useContext(AuthContext);
 
   const isWeb = Platform.OS === 'web';
   const isWideScreen = width >= 768;
   const submitForm = async () => {
     try {
-        const login = await account.createEmailPasswordSession(email, password);
-        await storeSave('userSession', login);
-        router.navigate('/')
+      authContext.logIn(email, password);
       } catch (error) {
-        
+        console.log("Login error", error);
     }
 
   }
+      // const getUser = async () => {
+      //     try {
+      //         let session = await storeGet('userSession');
+      //         if (session) return router.navigate('/(protected)/(tabs)/index');
+      //     } catch (err) {
+      //         // Not logged in
+      //         console.log(err);
+      //     }
+      // }
+  
+      React.useEffect(() => {
+          // getUser();
+      },[])
   return (
     <View style={[styles.container, isWeb && isWideScreen && styles.webContainer]}>
       {isWeb && isWideScreen && (

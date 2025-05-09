@@ -1,33 +1,26 @@
-import { storeGet } from "@/helpers/storage";
-import { Slot, Stack, usePathname, useRouter } from "expo-router";
-import { useEffect } from "react";
-
+import { AuthProvider } from "@/helpers/authContext";
+import { Slot, Stack, usePathname } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import React from "react";
 const avoidLayout = ['/login', '/register']
-export default () =>{
-    const router = useRouter();
+
+export default function RootLayout() {
     const pathname = usePathname();
-    
-    
-    const getUser = async () => {
-        try {
-            let session = await storeGet('userSession');
-            console.log('Session:', session);
-            if (!session) return router.navigate('/login');
-        } catch (err) {
-            // Not logged in
-            console.log(err);
-        }
-    }
-
-    useEffect(() => {
-        getUser();
-    },[])
-
-    if (avoidLayout.includes(pathname)) {
-        return <Slot />;
-
-    } 
-    return <Stack />;
-    }
-
-
+  return (
+    <AuthProvider>
+      <StatusBar style="auto" />
+        {avoidLayout.includes(pathname) ? <Slot /> : <Stack>
+        <Stack.Screen
+          name="(protected)"
+          
+          options={{
+            title: 'title',
+            
+            headerShown: false,
+            animation: "none",
+          }}
+        />
+      </Stack>}
+    </AuthProvider>
+  );
+}
